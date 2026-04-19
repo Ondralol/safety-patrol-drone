@@ -37,3 +37,8 @@ uv run jupyter notebook
 ```
 and select the "safety-drone-app" kernel
 
+## Google colab setup
+On google drive create folder
+`deep-learning-cnn` and inside three subfolders: `data` and `models`. Inside the data folder, paste in the dataset (download it as YOLOv8 Pytorch from Roboflow). 
+
+
