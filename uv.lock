@@ -2484,6 +2484,7 @@ name = "safety-drone-app"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "ipykernel" },
     { name = "jupyter" },
     { name = "numpy" },
     { name = "opencv-python" },
@@ -2497,6 +2498,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "ipykernel" },
     { name = "jupyter" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "opencv-python", specifier = "==4.9.0.80" },

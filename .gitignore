@@ -97,12 +97,6 @@ dmypy.json
 *.swp
 *.swo
 
-# Data files (optional - uncomment if needed)
-# data/
-# *.csv
-# *.tsv
-
-# Model files (optional - uncomment if needed)
-# *.h5
-# *.pt
-# *.pth
+# Dataset
+data/
+runs/

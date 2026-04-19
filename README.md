@@ -27,8 +27,13 @@ uv run src/main.py
 ```
 
 ## Run jupyter notebooks
+Install kernel
+```
+uv run python -m ipykernel install --user --name safety-drone-app --display-name "safety-drone-app"
+```
+Run notebook
 ```
 uv run jupyter notebook
 ```
-and select the kernel
+and select the "safety-drone-app" kernel
 

@@ -25,4 +25,5 @@ dependencies = [
     "pillow==10.3.0",
 
     "jupyter",
+    "ipykernel",
 ]
