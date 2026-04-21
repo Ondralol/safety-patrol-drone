@@ -8,6 +8,7 @@ requires-python = ">=3.10"
 dependencies = [
     # GUI
     "pyside6==6.7.0",
+    "qdarkstyle",
 
     # ML / YOLO
     "ultralytics==8.1.0",

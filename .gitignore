@@ -100,3 +100,4 @@ dmypy.json
 # Dataset
 data/
 runs/
+models/
