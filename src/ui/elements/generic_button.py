@@ -47,6 +47,8 @@ class GenericButton(QPushButton):
 
         # Sizing policy
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMaximumHeight(90)
+        self.setMaximumWidth(200)
 
     @Slot(bool)
     def handleClick(self):

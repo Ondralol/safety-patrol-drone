@@ -5,13 +5,17 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel
 from ui.elements.generic_button import GenericButton
 from ui.elements.generic_label import GenericLabel
 from ui.elements.record_button import RecordButton
+
 from ui.widgets.activity_indicator_widget import ActivityIndicatorWidget
 from ui.widgets.battery_widget import BatteryWidget
-from ui.windows.popup_window_drone_controls import PopupWindowDroneControls
 
+from ui.windows.popup_window_drone_controls import PopupWindowDroneControls
+from ui.windows.popup_window_drone_debug import PopupWindowDroneDebug
+
+from communication.dji_api import Drone
 
 MAIN_STATUS_BAR_WIDGET_WIDTH = 1920
-MAIN_STATUS_BAR_WIDGET_HEIGHT = 50
+MAIN_STATUS_BAR_WIDGET_HEIGHT = 75
 
 class StatusBarWidget(QFrame):
     """Status bar widget for the main window.
@@ -19,8 +23,10 @@ class StatusBarWidget(QFrame):
     Contains the connect button, drone connectivity indicator, battery status, wifi status
     and buttons to open popup windows for debug and controls."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, drone: Drone):
         super().__init__(parent)
+
+        self.drone = drone
 
         # Create horizontal layout and set spacing/margins
         horizontalLayout = QHBoxLayout()
@@ -36,12 +42,19 @@ class StatusBarWidget(QFrame):
         horizontalLayout.addWidget(GenericLabel(self, "Drone"))                                                                                                                              
         horizontalLayout.addWidget(ActivityIndicatorWidget(self, 500))
 
-        # Extra controls button to open popup window - to control drone
+        # Drone controls button to open popup window - to control drone
         self.buttonDroneControls = GenericButton(self, "Drone Controls")
         self.buttonDroneControls.clicked.connect(self.droneControlsButtonClicked)
         horizontalLayout.addWidget(self.buttonDroneControls)
 
-        self.droneControlsPopup = PopupWindowDroneControls(self)
+        self.droneControlsPopup = PopupWindowDroneControls(self, drone)
+
+        # Drone debug button to open popup window - to debug the drone
+        self.buttonDroneDebug = GenericButton(self, "Drone Debug")
+        self.buttonDroneDebug.clicked.connect(self.droneDebugButtonClicked)
+        horizontalLayout.addWidget(self.buttonDroneDebug)
+
+        self.droneDebugPopup = PopupWindowDroneDebug(self, drone)
 
         # Add record button
         horizontalLayout.addWidget(RecordButton(self))
@@ -61,6 +74,9 @@ class StatusBarWidget(QFrame):
     def droneControlsButtonClicked(self):
         self.droneControlsPopup.show()
 
+    def droneDebugButtonClicked(self):
+        self.droneDebugPopup.show()
+
     def DroneConnectButtonClicked(self):
-        # TODO
+        self.drone.connect()
         print("Connecting to the drone")

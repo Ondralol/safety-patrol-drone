@@ -88,8 +88,6 @@ class Drone:
         
         Steps size dictates the circle smoothness
         """
-
-        
         for i in range(steps):
             angle = 2 * math.pi * i / steps                                                                                                                                  
             next_angle = 2 * math.pi * (i + 1) / steps                                                                                                                       
@@ -98,7 +96,9 @@ class Drone:
             self.moveToXYZRelativeToCurrentPosition(x, y, 0, speed)
             self.rotate(ROTATION_DIRECTION.CLOCKWISE, 360 // steps)        
 
-
+    def startSequence(self):
+        # TODO
+        pass
 
     def setSpeed(self, speed: SPEED):
         # TODO Log action

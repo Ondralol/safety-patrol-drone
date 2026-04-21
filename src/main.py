@@ -12,7 +12,7 @@ from ui.windows.main_window import MainWindow
 def main():
     app = QApplication(sys.argv)
     
-    # Enable ctrl + c to close te app
+    # Enable ctrl + c to close the app
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     
     # Set the theme

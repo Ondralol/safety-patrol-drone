@@ -6,7 +6,7 @@ A Python application using PySide6 for GUI and YOLO for object detection to find
 
 Make sure you have the following installed:
 
-- Python >= 3.10  
+- Python >= 3.11
 - Pip  
 - UV (recommended package manager)
 
