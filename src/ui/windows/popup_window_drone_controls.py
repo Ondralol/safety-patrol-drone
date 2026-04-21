@@ -81,6 +81,7 @@ class PopupWindowDroneControls(QDialog):
 
     def _buildAdvancedControls(self):
         self.mainLayoutVertical.addLayout(self._buildMove())
+        self.mainLayoutVertical.addLayout(self._buildRotate())
         self.mainLayoutVertical.addLayout(self.__buildMoveToXYZRelativeToCurrentPosition())
         self.mainLayoutVertical.addLayout(self._buildCircle())
         
@@ -95,6 +96,18 @@ class PopupWindowDroneControls(QDialog):
         horizontalLayout.addWidget(self.buttonMove)
         horizontalLayout.addWidget(self.dropdownMove)
         horizontalLayout.addWidget(self.spinboxMove)
+        return horizontalLayout
+    
+    def _buildRotate(self):
+        horizontalLayout = QHBoxLayout()
+        self.dropdownRotate = Dropdown(self, "Direction", ROTATION_DIRECTION)
+        self.spinboxRotate = Spinbox(self, "Angle", "deg", 10, 500, 10, 1, 0)
+        self.buttonRotate = GenericButton(self, "Rotate")
+        self.buttonRotate.clicked.connect(lambda: self.drone.rotate(self.dropdownRotate.getCurrentEnum(),
+                                                                    self.spinboxRotate.getValue()))
+        horizontalLayout.addWidget(self.buttonRotate)
+        horizontalLayout.addWidget(self.dropdownRotate)
+        horizontalLayout.addWidget(self.spinboxRotate)
         return horizontalLayout
     
     def __buildMoveToXYZRelativeToCurrentPosition(self):
