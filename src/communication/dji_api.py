@@ -63,6 +63,10 @@ class Drone:
         self._run(self.drone.emergency)
 
 
+    def enableMissionPads(self):
+        self._run(self.drone.enable_mission_pads)
+
+
     def move(self, dir: DIRECTION, x: int):
         """Fly x cm in direction dir."""
 
@@ -101,7 +105,9 @@ class Drone:
                 self.drone.rotate_clockwise(360 // steps)       
         self._run(_circle)    
 
+
     def startSequence(self):
+        """Automatic sequence on predefined path"""
         pass
 
 
@@ -110,16 +116,27 @@ class Drone:
 
 
     def getBattery(self):
-        return self.drone.get_battery()
+        try:
+            return self.drone.get_battery()
+        except:
+            return None
     
-    def getMissionpadXYZ(self):
-        x = self.drone.get_mission_pad_distance_x()
-        y = self.get_mission_pad_distance_y()
-        z = self.get_mission_pad_distance_z()
 
-        return x, y, z
+    def getMissionpadXYZ(self):
+        try:
+            x = self.drone.get_mission_pad_distance_x()
+            y = self.get_mission_pad_distance_y()
+            z = self.get_mission_pad_distance_z()
+
+            return x, y, z
+        except:
+            return None
     
+
     def getFrame(self):
-        return self.drone.get_frame_read()
+        try:
+            return self.drone.get_frame_read()
+        except:
+            return None
 
             

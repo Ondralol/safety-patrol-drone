@@ -80,16 +80,25 @@ class PopupWindowDroneControls(QDialog):
         self.mainLayoutVertical.addLayout(horizotalLayout)
 
     def _buildAdvancedControls(self):
+        self.mainLayoutVertical.addLayout(self._buildButtonPad())
         self.mainLayoutVertical.addLayout(self._buildMove())
         self.mainLayoutVertical.addLayout(self._buildRotate())
         self.mainLayoutVertical.addLayout(self.__buildMoveToXYZRelativeToCurrentPosition())
         self.mainLayoutVertical.addLayout(self._buildCircle())
         
 
+    def _buildButtonPad(self):
+        horizontalLayout = QHBoxLayout()
+        self.buttonPad = GenericButton(self, "Enable mission pads")
+        self.buttonPad.clicked.connect(self.drone.enableMissionPads)
+        horizontalLayout.addWidget(self.buttonPad)
+        horizontalLayout.addStretch(0)
+        return horizontalLayout
+
     def _buildMove(self):
         horizontalLayout = QHBoxLayout()
         self.dropdownMove = Dropdown(self, "Direction", DIRECTION)
-        self.spinboxMove = Spinbox(self, "Distance", "cm", 10, 500, 10, 1, 0)
+        self.spinboxMove = Spinbox(self, "Distance", " cm", 10, 500, 10, 1, 0)
         self.buttonMove = GenericButton(self, "Move")
         self.buttonMove.clicked.connect(lambda: self.drone.move(self.dropdownMove.getCurrentEnum(), self.spinboxMove.getValue()))
 
@@ -101,7 +110,7 @@ class PopupWindowDroneControls(QDialog):
     def _buildRotate(self):
         horizontalLayout = QHBoxLayout()
         self.dropdownRotate = Dropdown(self, "Direction", ROTATION_DIRECTION)
-        self.spinboxRotate = Spinbox(self, "Angle", "deg", 10, 500, 10, 1, 0)
+        self.spinboxRotate = Spinbox(self, "Angle", " deg", 10, 500, 10, 1, 0)
         self.buttonRotate = GenericButton(self, "Rotate")
         self.buttonRotate.clicked.connect(lambda: self.drone.rotate(self.dropdownRotate.getCurrentEnum(),
                                                                     self.spinboxRotate.getValue()))
@@ -116,7 +125,7 @@ class PopupWindowDroneControls(QDialog):
         self.spinboxMoveToXYZRelative_X = Spinbox(self, "X", "", 10, 500, 10, 1, 0)
         self.spinboxMoveToXYZRelative_Y = Spinbox(self, "Y", "", 10, 500, 10, 1, 0)
         self.spinboxMoveToXYZRelative_Z = Spinbox(self, "Z", "", 10, 500, 10, 1, 0)
-        self.buttonMoveToXYZRelative = GenericButton(self, "Move To XYZ Relative To Current Position")
+        self.buttonMoveToXYZRelative = GenericButton(self, "Move To XYZ Relative")
         self.buttonMoveToXYZRelative.clicked.connect(lambda: self.drone.moveToXYZRelativeToCurrentPosition(self.spinboxMoveToXYZRelative_X.getValue(),
                                                                                               self.spinboxMoveToXYZRelative_Y.getValue(),
                                                                                               self.spinboxMoveToXYZRelative_Z.getValue(),
