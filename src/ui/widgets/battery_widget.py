@@ -38,9 +38,9 @@ class BatteryWidget(QWidget):
         self.percent_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.addWidget(self.percent_label)
 
-        self.set_level(0)
+        self.setLevel(0)
 
-    def set_level(self, percent: int):
+    def setLevel(self, percent: int):
         percent = max(0, min(100, percent))
         self.bar.setValue(percent)
         self.percent_label.setText(f"{percent}%")

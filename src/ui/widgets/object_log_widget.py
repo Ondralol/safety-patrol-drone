@@ -17,5 +17,5 @@ class ObjectLogWidget(QWidget):
         self.log = QListWidget()
         layout.addWidget(self.log)
 
-    def add_entry(self, label: str, timestamp: str):
+    def addEntry(self, label: str, timestamp: str):
         self.log.addItem(f"[{timestamp}] {label}")

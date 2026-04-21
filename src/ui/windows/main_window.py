@@ -13,9 +13,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Safety Drone Application")
         self.resize(1920, 1080)
-        self._build_ui()
+        self.buildUI()
 
-    def _build_ui(self):
+    def buildUI(self):
 
         # The main layout for the whole page
         mainVerticalLayout = QVBoxLayout()
