@@ -68,9 +68,9 @@ class PopupWindowDroneControls(QDialog):
         horizotalLayout.addWidget(self.buttonEmergency)
 
         # Start Stream
-        self.buttonStartStream = GenericButton(self, "Start Stream")
-        self.buttonStartStream.clicked.connect(self.drone.startStream)
-        horizotalLayout.addWidget(self.buttonStartStream)
+        #self.buttonStartStream = GenericButton(self, "Start Stream")
+        #self.buttonStartStream.clicked.connect(self.parent.parent.startVideo)
+        #horizotalLayout.addWidget(self.buttonStartStream)
 
         # Automatic Sequence
         self.buttonAutomaticSequence = GenericButton(self, "Automatic Sequence")

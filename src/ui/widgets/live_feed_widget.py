@@ -1,5 +1,8 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtGui import QImage, QPixmap
+
+import numpy as np
 
 from ui.elements.title import Title
 
@@ -21,3 +24,14 @@ class LiveFeedWidget(QWidget):
         self.feed_label.setStyleSheet("background: black; color: white;")
         self.feed_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout.addWidget(self.feed_label)
+    
+    def updateFrame(self, frame: np.ndarray):
+        h, w, ch = frame.shape
+        img = QImage(frame.data, w, h, ch * w, QImage.Format.Format_RGB888)
+        self.feed_label.setPixmap(
+            QPixmap.fromImage(img).scaled(
+                self.feed_label.size(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+        )

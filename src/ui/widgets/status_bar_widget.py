@@ -23,7 +23,7 @@ class StatusBarWidget(QFrame):
     Contains the connect button, drone connectivity indicator, battery status, wifi status
     and buttons to open popup windows for debug and controls."""
 
-    def __init__(self, parent, drone: Drone):
+    def __init__(self, parent, drone: Drone, startVideoCallback):
         super().__init__(parent)
 
         self.drone = drone
@@ -56,6 +56,11 @@ class StatusBarWidget(QFrame):
         horizontalLayout.addWidget(self.buttonDroneDebug)
 
         self.droneDebugPopup = PopupWindowDroneDebug(self, drone)
+
+        # Add start stream video
+        self.buttonDroneStartStream = GenericButton(self, "Start Stream")
+        self.buttonDroneStartStream.clicked.connect(startVideoCallback)
+        horizontalLayout.addWidget(self.buttonDroneStartStream)
 
         # Add record button
         horizontalLayout.addWidget(RecordButton(self))

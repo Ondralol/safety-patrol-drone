@@ -6,6 +6,8 @@ from ui.widgets.map_widget import MapWidget
 from ui.widgets.object_log_widget import ObjectLogWidget
 from ui.widgets.status_bar_widget import StatusBarWidget
 
+from utils.video_worker import VideoWorker, MODEL_TYPE
+
 from communication.dji_api import Drone
 
 POLL_TIME_MS = 500
@@ -37,7 +39,7 @@ class MainWindow(QMainWindow):
         mainVerticalLayout = QVBoxLayout()
 
         # Add status bar
-        self.statusBar = StatusBarWidget(self, self.drone)
+        self.statusBar = StatusBarWidget(self, self.drone, self.startVideo)
         mainVerticalLayout.addWidget(self.statusBar)
 
         # Create horizontal layout
@@ -86,6 +88,11 @@ class MainWindow(QMainWindow):
         if tof is not None:
             self.statusBar.droneDebugPopup.current_distance_tof.set_value(tof, "cm")
 
+    def startVideo(self):
+      self.drone.startStream()
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_NANO)
+      self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
+      self.video_worker.start()
 
     def closeEvent(self, event):
         # TODO: disconnect drone, stop recording
