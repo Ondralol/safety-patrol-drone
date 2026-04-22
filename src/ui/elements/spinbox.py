@@ -1,7 +1,7 @@
 from PySide6.QtCore import QEvent, QSize, Qt
 from PySide6.QtWidgets import QDoubleSpinBox, QSizePolicy, QVBoxLayout, QWidget, QLabel
 
-SPINBOX_WIDGET_WIDTH = 150
+SPINBOX_WIDGET_WIDTH = 80
 SPINBOX_WIDGET_HEIGHT = 40
 
 class Spinbox(QWidget):
@@ -41,6 +41,7 @@ class Spinbox(QWidget):
             top_window.installEventFilter(self)
         
         self.setMaximumHeight(90)
+        self.setMaximumWidth(150)
 
     # Default size
     def sizeHint(self) -> QSize:

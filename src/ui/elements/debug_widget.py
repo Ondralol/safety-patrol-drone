@@ -63,6 +63,7 @@ class DebugWidget(QWidget):
         #self.setFixedSize(250, 60)
         layout.setContentsMargins(1, 1, 1, 1)
         layout.setSpacing(1)
+        self.setMaximumWidth(450)
 
         self.setLayout(layout)
        

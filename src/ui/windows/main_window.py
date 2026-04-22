@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         
         cur_pos = self.drone.getMissionpadXYZ()
         if cur_pos is not None:
-            self.statusBar.droneDebugPopup.current_pos.set_value(f"({cur_pos[0], cur_pos[1], cur_pos[2]})")
+            self.statusBar.droneDebugPopup.current_pos.set_value(f"({cur_pos[0]}, {cur_pos[1]}, {cur_pos[2]})")
 
         height = self.drone.getHeight()
         if height is not None:
