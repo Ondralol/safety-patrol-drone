@@ -88,9 +88,12 @@ class MainWindow(QMainWindow):
         if tof is not None:
             self.statusBar.droneDebugPopup.current_distance_tof.set_value(tof, "cm")
 
+        # Send keep alive
+        self.drone.keepAlive()
+
     def startVideo(self):
       self.drone.startStream()
-      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_MEDIUM)
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_NANO)
       self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
       self.video_worker.start()
 

@@ -15,7 +15,7 @@ MODEL_PATH_PREFIX = "models/"
 INFERENCE_EVERY_N = 3 # Only run inference every nth frame
 CONFIRM_INFERENCE_M = 3 # Only confirm inference after n consetutive inferences 
 BOX_EXPIRE_FRAMES = 3 # Old boxes expire after this number of frames
-CONFIDENCE_RATE = 0.25
+CONFIDENCE_RATE = 0.45
 
 class VideoWorker(QThread):                                                                                                                                            
     frame_ready = Signal(np.ndarray)

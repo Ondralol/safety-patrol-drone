@@ -51,6 +51,11 @@ class Drone:
     def takeoff(self):
         self._run(self.drone.takeoff)
     
+    def keepAlive(self):
+        try:                                                                                                                                          
+          self.drone.send_command_without_return("command")
+        except:                                                                                                                                       
+          pass  
 
     def land(self):
         self._run(self.drone.land)
@@ -94,7 +99,7 @@ class Drone:
             self._run(lambda: self.drone.rotate_counter_clockwise(angle_deg))
 
 
-    def inspectObject(self, radius_cm: int = 50, steps: int = 5, speed: SPEED = SPEED.SLOW, on_done = None):
+    def inspectObject(self, radius_cm: int = 50, steps: int = 2, speed: SPEED = SPEED.SLOW, on_done = None):
         """Inspect an object by sweeping 45° left then 45° right around it.
 
         Drone flies around the object at a fixed radius, rotating to keep
