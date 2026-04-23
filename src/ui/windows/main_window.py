@@ -10,7 +10,7 @@ from utils.video_worker import VideoWorker, MODEL_TYPE
 
 from communication.dji_api import Drone
 
-POLL_TIME_MS = 500
+POLL_TIME_MS = 2500
 
 class MainWindow(QMainWindow):
     """Main application window."""
@@ -84,6 +84,11 @@ class MainWindow(QMainWindow):
         if height is not None:
             self.statusBar.droneDebugPopup.current_height.set_value(height, "cm")
 
+        
+        temp = self.drone.getTemp()
+        if temp is not None:
+            self.statusBar.current_temp.set_value(temp, "deg")
+
         tof = self.drone.getDistanceTof()
         if tof is not None:
             self.statusBar.droneDebugPopup.current_distance_tof.set_value(tof, "cm")
@@ -93,7 +98,7 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
       self.drone.startStream()
-      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_NANO)
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_SMALL)
       self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
       self.video_worker.start()
 

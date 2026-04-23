@@ -70,3 +70,5 @@ class DebugWidget(QWidget):
     def set_value(self, value, suffix: str = ""):
         """Update the displayed value"""
         self.value_label.setText(f"{value} {suffix}".strip())
+
+    # TODO Danger colours

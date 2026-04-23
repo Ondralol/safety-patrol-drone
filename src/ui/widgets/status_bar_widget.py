@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel
 from ui.elements.generic_button import GenericButton
 from ui.elements.generic_label import GenericLabel
 from ui.elements.record_button import RecordButton
+from ui.elements.debug_widget import DebugWidget
 
 from ui.widgets.activity_indicator_widget import ActivityIndicatorWidget
 from ui.widgets.battery_widget import BatteryWidget
@@ -40,7 +41,7 @@ class StatusBarWidget(QFrame):
 
         # Add activity dot
         horizontalLayout.addWidget(GenericLabel(self, "Drone"))   
-        self.activityIndicator = ActivityIndicatorWidget(self, 1000)                                                                                                                           
+        self.activityIndicator = ActivityIndicatorWidget(self, 3000)                                                                                                                           
         horizontalLayout.addWidget(self.activityIndicator)
 
         # Drone controls button to open popup window - to control drone
@@ -64,6 +65,11 @@ class StatusBarWidget(QFrame):
 
         # Add record button
         horizontalLayout.addWidget(RecordButton(self))
+
+        # Add temperature
+        # Current temp
+        self.current_temp = DebugWidget(self, "Temp")
+        horizontalLayout.addWidget(self.current_temp)
 
         # Add battery indicator
         self.battery = BatteryWidget(self)

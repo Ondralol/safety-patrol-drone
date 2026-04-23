@@ -2,7 +2,7 @@ import math
 from djitellopy import tello, Tello
 from enum import Enum, IntEnum, StrEnum
 import threading
- 
+import time
 
 class DIRECTION(StrEnum):
     UP = "up"
@@ -20,6 +20,9 @@ class SPEED(IntEnum):
     SLOW = 10
     MEDIUM = 25
     FAST = 45
+
+
+TIMEOUT = 5.0
 
 
 class Drone:
@@ -101,46 +104,47 @@ class Drone:
             self._run(lambda: self.drone.rotate_counter_clockwise(angle_deg))
 
 
-    def inspectObject(self, radius_cm: int = 80, steps: int = 3, speed: SPEED = SPEED.SLOW, on_done = None):
-        """Inspect an object by sweeping 45° left then 45° right around it.
+    def _buildInspectSequence(self):
+            return [
+            # Moving to left side
+            lambda: self.drone.rotate_counter_clockwise(45),
+            lambda: self.drone.move("forward", 25),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("left", 50),
 
-        Drone flies around the object at a fixed radius, rotating to keep
-        the camera facing the object throughout
+            # Go back to the starting point
+            lambda: self.drone.move("right", 50),
+            lambda: self.drone.rotate_counter_clockwise(90),
+            lambda: self.drone.move("back", 20),
+            lambda: self.drone.rotate_clockwise(45),
 
-        1) Arc 45° left
-        2) Return to starting position
-        3) Arc 45° right
-        4) Return to starting position
+            # Moving to right side
+            lambda: self.drone.rotate_clockwise(45),
+            lambda: self.drone.move("forward", 25),
+            lambda: self.drone.rotate_counter_clockwise(90),
+            lambda: self.drone.move("right", 50),
 
-        The steps argument dictates the smoothness of the movement"""
+            # Go back to the starting point
+            lambda: self.drone.move("left", 50),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("back", 20),
+            lambda: self.drone.rotate_counter_clockwise(45),
 
-        def _arc(total_angle_deg: int, direction: int):
-            rotate_deg = total_angle_deg / steps
-            waypoints = [
-                (radius_cm * math.sin(math.radians(total_angle_deg * i / steps)),
-                 radius_cm * math.cos(math.radians(total_angle_deg * i / steps)))
-                for i in range(steps + 1)
-            ]
-            for i in range(steps):
-                dx = round((waypoints[i + 1][0] - waypoints[i][0]) * direction)
-                dy = round(waypoints[i + 1][1] - waypoints[i][1])
-                self.drone.go_xyz_speed(-dx, dy, 0, speed)
-                print(f"{dx}, {dy}")
-                if direction == 1:
-                    self.drone.rotate_counter_clockwise(int(rotate_deg))
-                else:
-                    self.drone.rotate_clockwise(int(rotate_deg))
+        ]
 
-        def _inspect():
-            _arc(45, direction=1)   # left arc
-            _arc(45, direction=-1)  # return to center
-            _arc(45, direction=-1)  # right arc
-            _arc(45, direction=1)   # return to center
 
-            if on_done:
+    def inspectObject(self, on_done = None):
+        """Inspect an object by sweeping left then right.
+
+       """
+        def _run_sequence():
+            for step in self._buildInspectSequence():
+                step()
+                time.sleep(TIMEOUT)
+            if on_done is not None:
                 on_done()
-
-        self._run(_inspect)
+                
+        self._run(_run_sequence)
 
 
     def _build_sequence(self):
@@ -190,6 +194,12 @@ class Drone:
     def getBattery(self):
         try:
             return self.drone.get_battery()
+        except:
+            return None
+        
+    def getTemp(self):
+        try:
+            return self.drone.get_temperature()
         except:
             return None
         
