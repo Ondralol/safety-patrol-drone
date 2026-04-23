@@ -20,6 +20,7 @@ class SPEED(IntEnum):
     MEDIUM = 25
     FAST = 45
 
+
 class Drone:
     def __init__(self):
         self.drone = tello.Tello()
@@ -39,7 +40,7 @@ class Drone:
         self._run(self.drone.connect)
 
     def end(self):
-        self._run(self.drone.end())
+        self._run(self.drone.end)
 
 
     def reboot(self):
@@ -91,22 +92,42 @@ class Drone:
             self._run(lambda: self.drone.rotate_counter_clockwise(angle_deg))
 
 
-    def circleObject(self, radius_cm: int, speed: SPEED, steps: int = 24):
-        """Circles around the object 
-        
-        Steps size dictates the circle smoothness
-        """
+    def inspectObject(self, radius_cm: int = 50, steps: int = 5, speed: SPEED = SPEED.SLOW):
+        """Inspect an object by sweeping 45° left then 45° right around it.
 
-        # Needs to be wrapped in order to be able to call in in a thread
-        def _circle():
+        Drone flies around the object at a fixed radius, rotating to keep
+        the camera facing the object throughout
+
+        1) Arc 45° left
+        2) Return to starting position
+        3) Arc 45° right
+        4) Return to starting position
+
+        The steps argument dictates the smoothness of the movement"""
+
+        def _arc(total_angle_deg: int, direction: int):
+            rotate_deg = total_angle_deg / steps
+            waypoints = [
+                (radius_cm * math.sin(math.radians(total_angle_deg * i / steps)),
+                 radius_cm * math.cos(math.radians(total_angle_deg * i / steps)))
+                for i in range(steps + 1)
+            ]
             for i in range(steps):
-                angle = 2 * math.pi * i / steps                                                                                                                                  
-                next_angle = 2 * math.pi * (i + 1) / steps                                                                                                                       
-                x = round(radius_cm * (math.cos(next_angle) - math.cos(angle)))
-                y = round(radius_cm * (math.sin(next_angle) - math.sin(angle)))                                                                                                    
-                self.drone.go_xyz_speed(x, y, 0, speed)
-                self.drone.rotate_clockwise(360 // steps)       
-        self._run(_circle)    
+                dx = round((waypoints[i + 1][0] - waypoints[i][0]) * direction)
+                dy = round(waypoints[i + 1][1] - waypoints[i][1])
+                self.drone.go_xyz_speed(-dx, dy, 0, speed)
+                if direction == 1:
+                    self.drone.rotate_counter_clockwise(int(rotate_deg))
+                else:
+                    self.drone.rotate_clockwise(int(rotate_deg))
+
+        def _inspect():
+            _arc(45, direction=1)   # left arc
+            _arc(45, direction=-1)  # return to center
+            _arc(45, direction=-1)  # right arc
+            _arc(45, direction=1)   # return to center
+
+        self._run(_inspect)
 
 
     def startSequence(self):
@@ -144,8 +165,8 @@ class Drone:
     def getMissionpadXYZ(self):
         try:
             x = self.drone.get_mission_pad_distance_x()
-            y = self.get_mission_pad_distance_y()
-            z = self.get_mission_pad_distance_z()
+            y = self.drone.get_mission_pad_distance_y()
+            z = self.drone.get_mission_pad_distance_z()
 
             return x, y, z
         except:

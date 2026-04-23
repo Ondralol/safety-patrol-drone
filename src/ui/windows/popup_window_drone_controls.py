@@ -143,8 +143,8 @@ class PopupWindowDroneControls(QDialog):
         self.dropdownCircle = Dropdown(self, "Speed", SPEED)
         self.spinboxCircleRadius= Spinbox(self, "Radius in cm", "", 10, 500, 10, 1, 0)
         self.spinboxCircleSteps = Spinbox(self, "Steps", "", 0, 100, 5, 1, 0)
-        self.buttonCircle = GenericButton(self, "Circle")
-        self.buttonCircle.clicked.connect(lambda: self.drone.circleObject(self.spinboxCircleRadius.getValue(),
+        self.buttonCircle = GenericButton(self, "Inspect")
+        self.buttonCircle.clicked.connect(lambda: self.drone.inspectObject(self.spinboxCircleRadius.getValue(),
                                                                                         self.dropdownCircle.getCurrentEnum(),
                                                                                         self.spinboxCircleSteps.getValue()))
         horizontalLayout.addWidget(self.buttonCircle)
