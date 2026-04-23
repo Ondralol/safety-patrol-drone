@@ -43,3 +43,7 @@ uv run jupyter notebook
 ```
 and select the "safety-drone-app" kernel
 
+
+# Streaming
+sudo ufw allow 8890/udp                                                                                                                           
+sudo ufw allow 11111/udp

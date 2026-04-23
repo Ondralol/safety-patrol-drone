@@ -38,6 +38,9 @@ class Drone:
     def connect(self):
         self._run(self.drone.connect)
 
+    def end(self):
+        self._run(self.drone.end())
+
 
     def reboot(self):
         self._run(self.drone.reboot)

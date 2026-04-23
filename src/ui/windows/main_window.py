@@ -90,10 +90,14 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
       self.drone.startStream()
-      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_NANO)
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_MEDIUM)
       self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
       self.video_worker.start()
 
     def closeEvent(self, event):
-        # TODO: disconnect drone, stop recording
+        #  Stop recording and stop the thread
+        self.poll_timer.stop()                                                                                                                        
+        if hasattr(self, 'video_worker'):                                                                                                             
+            self.video_worker.stop()                                                                                                                  
+        self.drone.drone.end() 
         super().closeEvent(event)

@@ -98,7 +98,7 @@ class PopupWindowDroneControls(QDialog):
     def _buildMove(self):
         horizontalLayout = QHBoxLayout()
         self.dropdownMove = Dropdown(self, "Direction", DIRECTION)
-        self.spinboxMove = Spinbox(self, "Distance", " cm", 10, 500, 10, 1, 0)
+        self.spinboxMove = Spinbox(self, "Distance", " cm", 20, 500, 10, 1, 0)
         self.buttonMove = GenericButton(self, "Move")
         self.buttonMove.clicked.connect(lambda: self.drone.move(self.dropdownMove.getCurrentEnum(), self.spinboxMove.getValue()))
 

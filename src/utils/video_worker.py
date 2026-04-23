@@ -1,5 +1,4 @@
-from PySide6.QtCore import QThread, Signal                                                                                                                               
-from ultralytics import YOLO                                                                                                                                             
+from PySide6.QtCore import QThread, Signal                                                                                                                                                                                                                                                                          
 from enum import StrEnum
 import numpy as np
 
@@ -25,6 +24,7 @@ class VideoWorker(QThread):
         self.running = True
     
     def _loadModel(self):
+        from ultralytics import YOLO  
         path = MODEL_PATH_PREFIX + self.model_type
         print(path)
         self.model = YOLO(path)
@@ -54,4 +54,6 @@ class VideoWorker(QThread):
                                                                                                                                                                         
     def stop(self):                                                                                                                                                      
         self.running = False                                                                                                                                           
-        self.wait()
+        if not self.wait(2000):
+            self.terminate()
+            self.wait()
