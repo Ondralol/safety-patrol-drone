@@ -135,10 +135,45 @@ class Drone:
         self._run(_inspect)
 
 
-    def startSequence(self):
-        """Automatic sequence on predefined path"""
-        pass
+    def _build_sequence(self):
+        # Drone starts in center facing forward
+        return [
+            # Go to front-left corner
+            lambda: self.drone.move("left", 50),
+            lambda: self.drone.move("forward", 50),
 
+            # Turn right, go to front-right corner
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 100),
+
+            # Turn right, go to back-right corner
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 100),
+
+            # Turn right, go to back-left corner
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 100),
+
+            # Turn right, go to front-left corner
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 100),
+
+            # Return to center
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 50),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 50),
+
+            # Rotate back
+            lambda: self.drone.rotate_clockwise(180)
+        ]
+
+    def startSequence(self):
+        """Fly predefined perimeter path."""
+        def _run_sequence():
+            for step in self._build_sequence():
+                step()
+        self._run(_run_sequence)
 
     def setSpeed(self, speed: SPEED):
         self._run(lambda: self.drone.set_speed(speed))
