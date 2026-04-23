@@ -48,7 +48,7 @@ class Drone:
         self._run(self.drone.reboot)
 
     def setBitRate(self):
-        self._run(self.drone.set_video_bitrate(Tello.BITRATE_1MBPS))
+        self._run(lambda: self.drone.set_video_bitrate(Tello.BITRATE_1MBPS))
 
     def takeoff(self):
         self._run(self.drone.takeoff)
