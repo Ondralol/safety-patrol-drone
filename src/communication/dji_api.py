@@ -65,7 +65,8 @@ class Drone:
 
 
     def emergency(self):
-        self._run(self.drone.emergency)
+        # Run instantly, not in a thread
+        self.drone.emergency()
 
 
     def enableMissionPads(self):
