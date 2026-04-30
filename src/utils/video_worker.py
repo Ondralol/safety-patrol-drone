@@ -19,6 +19,8 @@ CONFIDENCE_RATE = 0.45
 
 class VideoWorker(QThread):                                                                                                                                            
     frame_ready = Signal(np.ndarray)
+    
+    target_found = Signal() # TODO improve target localization, more granual steps
                                                                                                                                                                         
     def __init__(self, drone, model_type: MODEL_TYPE):
         super().__init__()                                                                                                                                               
@@ -68,6 +70,9 @@ class VideoWorker(QThread):
                 # TODO Call inspection
                 if len(results[0].boxes) > 0:                                                                                                                 
                     self.on_detection(results[0])
+
+                    # TODO properly track where the target is on the map
+                    self.target_found.emit()
 
             if last_boxes is not None and (frame_count - last_inference_frame) < BOX_EXPIRE_FRAMES:
                 try:
