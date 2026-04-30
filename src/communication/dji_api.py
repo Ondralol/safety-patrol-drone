@@ -132,32 +132,6 @@ class Drone:
 
         ]
     
-    def _routineInspection(self):
-            return [
-            # Moving to top left corner
-            lambda: self.drone.rotate_counter_clockwise(45),
-            lambda: self.drone.move("forward", 100),
-            lambda: self.drone.rotate_clockwise(135),
-
-            # Moving in a square around grid  
-            lambda: self.drone.move("forward", 150),
-            lambda: self.drone.rotate_clockwise(90),
-            lambda: self.drone.move("forward", 150),
-            lambda: self.drone.rotate_clockwise(90),
-            lambda: self.drone.move("forward", 150),
-            lambda: self.drone.rotate_clockwise(90),
-            lambda: self.drone.move("forward", 150),
-            lambda: self.drone.rotate_clockwise(135),
-
-            # Moving in a diagonal around grid  
-            lambda: self.drone.move("forward", 200),
-            lambda: self.drone.rotate_clockwise(135),
-            lambda: self.drone.move("forward", 150),
-            lambda: self.drone.rotate_clockwise(135),
-            lambda: self.drone.move("forward", 200),
-            lambda: self.drone.rotate_clockwise(180),
-            lambda: self.drone.move("forward", 100),
-        ]
 
 
     def inspectObject(self, on_done = None):
@@ -206,11 +180,38 @@ class Drone:
             # Rotate back
             lambda: self.drone.rotate_clockwise(180)
         ]
+    
+    def _routineInspection(self):
+            return [
+            # Moving to top left corner
+            lambda: self.drone.rotate_counter_clockwise(45),
+            lambda: self.drone.move("forward", 100),
+            lambda: self.drone.rotate_clockwise(135),
+
+            # Moving in a square around grid  
+            lambda: self.drone.move("forward", 150),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 150),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 150),
+            lambda: self.drone.rotate_clockwise(90),
+            lambda: self.drone.move("forward", 150),
+            lambda: self.drone.rotate_clockwise(135),
+
+            # Moving in a diagonal around grid  
+            lambda: self.drone.move("forward", 200),
+            lambda: self.drone.rotate_clockwise(135),
+            lambda: self.drone.move("forward", 150),
+            lambda: self.drone.rotate_clockwise(135),
+            lambda: self.drone.move("forward", 200),
+            lambda: self.drone.rotate_clockwise(180),
+            lambda: self.drone.move("forward", 100),
+        ]
 
     def startSequence(self):
         """Fly predefined perimeter path."""
         def _run_sequence():
-            for step in self._build_sequence():
+            for step in self._routineInspection():
                 step()
         self._run(_run_sequence)
 
