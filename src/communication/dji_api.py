@@ -189,6 +189,7 @@ class Drone:
             (lambda: self.move(DIRECTION.BACK, 20, in_thread=False), 3.0),
             (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 45, in_thread=False), 2.0),
         ]
+    
 
 
     def inspectObject(self, on_done = None):
@@ -237,6 +238,32 @@ class Drone:
 
             # Rotate back
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 180, in_thread=False), 4.0),
+        ]
+    
+    def _routineInspection(self):
+            return [
+            # Moving to top left corner
+            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 45, in_thread=False), 2.0),
+            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 135, in_thread=False), 3.0),
+
+            # Moving in a square around grid  
+
+            (lambda: self.move(DIRECTION.FORWARD, 150, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
+            (lambda: self.move(DIRECTION.FORWARD, 150, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
+            (lambda: self.move(DIRECTION.FORWARD, 150, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 135, in_thread=False), 3.0   ),
+
+            # Moving in a diagonal around grid  
+            (lambda: self.move(DIRECTION.FORWARD, 200, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 135, in_thread=False), 3.0),
+            (lambda: self.move(DIRECTION.FORWARD, 150, in_thread=False), 7.0    ),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 135, in_thread=False), 3.0),
+            (lambda: self.move(DIRECTION.FORWARD, 200, in_thread=False), 7.0),
+            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 180, in_thread=False), 4.0),
+            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
         ]
 
     def startSequence(self):
