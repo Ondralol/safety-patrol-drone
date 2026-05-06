@@ -93,16 +93,16 @@ class MainWindow(QMainWindow):
         if tof is not None:
             self.statusBar.droneDebugPopup.current_distance_tof.set_value(tof, "cm")
 
-        self.map.update_position(self.drone.position)
+        self.map.update_position(self.drone.position) # TODO more often perhaps? after every move directly emit
 
         # Send keep alive
         self.drone.keepAlive()
 
     def startVideo(self):
       self.drone.startStream()
-      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_SMALL)
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.RT_DETR_LARGE)
       self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
-      self.video_worker.target_found.connect(lambda: self.map.update_targets(self.drone.position))
+      self.video_worker.target_found.connect(lambda: self.map.update_targets([self.drone.position]))
       self.video_worker.start()
 
     def closeEvent(self, event):

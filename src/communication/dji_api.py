@@ -3,7 +3,6 @@ from djitellopy import tello, Tello
 from enum import Enum, IntEnum, StrEnum
 import threading
 import time
-
 from utils.position import Position
 
 class DIRECTION(StrEnum):
@@ -26,6 +25,7 @@ class SPEED(IntEnum):
 
 TIMEOUT = 5.0
 
+RC_SPEED_TO_CMS = 1.0 # We need to calibrate this
 
 class Drone:
     def __init__(self):
@@ -33,6 +33,8 @@ class Drone:
 
         # Relative position
         self.position = Position(0, 0, 0, 0)
+
+        self._cancel_event = threading.Event()
 
     def _run(self, fn, *args):
         """Runs function in another thread"""
@@ -69,8 +71,12 @@ class Drone:
           pass  
 
     def land(self):
-        self._run(self.drone.land)
+        self._cancel_event.set()
+        if hasattr(self, '_worker') and self._worker.is_alive():
+            self._worker.join(timeout=7.0)
+        self.drone.land()
         self.position.z = 0
+        self._cancel_event.clear()
 
 
     def startStream(self):
@@ -90,6 +96,48 @@ class Drone:
     def enableMissionPads(self):
         self._run(self.drone.enable_mission_pads)
 
+    def moveSmall(self, dir: DIRECTION, x_cm: int, speed: SPEED, in_thread: bool = True):
+        """Uses rc control to move precisely (cm accuracy)."""
+
+        estimated_cms = speed * RC_SPEED_TO_CMS
+        duration = x_cm / estimated_cms
+
+        lr, fb, ud = 0, 0, 0
+        if   dir is DIRECTION.FORWARD: fb =  speed
+        elif dir is DIRECTION.BACK:    fb = -speed
+        elif dir is DIRECTION.LEFT:    lr = -speed
+        elif dir is DIRECTION.RIGHT:   lr =  speed
+        elif dir is DIRECTION.UP:      ud =  speed
+        elif dir is DIRECTION.DOWN:    ud = -speed
+
+        def _go():
+            self.drone.send_rc_control(lr, fb, ud, 0)
+            time.sleep(duration)
+            self.drone.send_rc_control(0, 0, 0, 0)
+
+        if in_thread:
+            self._run(_go)
+        else:
+            _go()
+
+        # Dead reckoning position update
+        a = math.radians(self.position.angle)
+        if dir is DIRECTION.FORWARD:
+            self.position.x += x_cm * math.cos(a)
+            self.position.y += x_cm * math.sin(a)
+        elif dir is DIRECTION.BACK:
+            self.position.x -= x_cm * math.cos(a)
+            self.position.y -= x_cm * math.sin(a)
+        elif dir is DIRECTION.LEFT:
+            self.position.x += x_cm * math.sin(a)
+            self.position.y -= x_cm * math.cos(a)
+        elif dir is DIRECTION.RIGHT:
+            self.position.x -= x_cm * math.sin(a)
+            self.position.y += x_cm * math.cos(a)
+        elif dir is DIRECTION.UP:
+            self.position.z += x_cm
+        elif dir is DIRECTION.DOWN:
+            self.position.z -= x_cm
 
     def move(self, dir: DIRECTION, x: int, in_thread = True):
         """Fly x cm in direction dir."""
@@ -190,10 +238,13 @@ class Drone:
     def inspectObject(self, on_done = None):
         """Inspect an object by sweeping left then right."""
         def _run_sequence():
+            self._cancel_event.clear()
             for step, timeout in self._buildInspectSequence():
+                if self._cancel_event.is_set():
+                    break
                 step()
-                time.sleep(timeout)
-            if on_done is not None:
+                self._cancel_event.wait(timeout)
+            if on_done is not None and not self._cancel_event.is_set():
                 on_done()
 
         self._run(_run_sequence)
@@ -203,30 +254,30 @@ class Drone:
         # Drone starts in center facing forward
         return [
             # Go to front-left corner
-            (lambda: self.move(DIRECTION.LEFT, 50, in_thread=False), 5.0),
-            (lambda: self.move(DIRECTION.FORWARD, 50, in_thread=False), 5.0),
+            (lambda: self.move(DIRECTION.LEFT, 40, in_thread=False), 5.0),
+            (lambda: self.move(DIRECTION.FORWARD, 40, in_thread=False), 5.0),
 
             # Turn right, go to front-right corner
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
+            (lambda: self.move(DIRECTION.FORWARD, 80, in_thread=False), 7.0),
 
             # Turn right, go to back-right corner
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
+            (lambda: self.move(DIRECTION.FORWARD, 80, in_thread=False), 7.0),
 
             # Turn right, go to back-left corner
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
+            (lambda: self.move(DIRECTION.FORWARD, 80, in_thread=False), 7.0),
 
             # Turn right, go to front-left corner
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 100, in_thread=False), 7.0),
+            (lambda: self.move(DIRECTION.FORWARD, 80, in_thread=False), 7.0),
 
             # Return to center
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 50, in_thread=False), 5.0),
+            (lambda: self.move(DIRECTION.FORWARD, 40, in_thread=False), 5.0),
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 90, in_thread=False), 3.0),
-            (lambda: self.move(DIRECTION.FORWARD, 50, in_thread=False), 5.0),
+            (lambda: self.move(DIRECTION.FORWARD, 40, in_thread=False), 5.0),
 
             # Rotate back
             (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 180, in_thread=False), 4.0),
@@ -264,9 +315,16 @@ class Drone:
     def startSequence(self):
         """Fly predefined perimeter path."""
         def _run_sequence():
+<<<<<<< HEAD
             for step, timeout in self._routineInspection():
+=======
+            self._cancel_event.clear()
+            for step, timeout in self._build_sequence():
+                if self._cancel_event.is_set():
+                    break
+>>>>>>> f421d2525a9a275ece909d185a0e6663aaac23eb
                 step()
-                time.sleep(timeout)
+                self._cancel_event.wait(timeout)
         self._run(_run_sequence)
 
     def setSpeed(self, speed: SPEED):

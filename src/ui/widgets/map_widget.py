@@ -1,4 +1,5 @@
 import math
+from dataclasses import replace 
 
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QColor, QPainter, QPen, QBrush, QPainterPath
@@ -135,5 +136,12 @@ class MapWidget(QWidget):
         self.canvas.update_position(position)
 
     def update_targets(self, new_targets):
-        self.canvas.targets.append(new_targets)
+        DIST = 30
+        for target in new_targets:
+            a = math.radians(target.angle)
+            target = replace(target,                                                                                                              
+                       x=target.x + math.cos(a) * DIST,
+                       y=target.y + math.sin(a) * DIST)  
+            self.canvas.targets.append(target)
+
         self.canvas.update()
