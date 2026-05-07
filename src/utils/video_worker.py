@@ -1,7 +1,7 @@
 from PySide6.QtCore import QThread, Signal
 from enum import StrEnum
 import numpy as np
-from utils.position import Position
+import math
 
 
 class MODEL_TYPE(StrEnum):
@@ -21,7 +21,7 @@ CONFIDENCE_RATE = 0.40
 class VideoWorker(QThread):                                                                                                                                            
     frame_ready = Signal(np.ndarray)
     
-    target_found = Signal(object)
+    target_found = Signal(str, tuple)
                                                                                                                                                                         
     def __init__(self, drone, model_type: MODEL_TYPE):
         super().__init__()                                                                                                                                               
@@ -40,30 +40,36 @@ class VideoWorker(QThread):
         self.model = YOLO(path)
         self.model_loaded = True
 
-    def _estimate_target_position(self, result, frame_shape):
-        boxes = result.boxes
-        if boxes is None or len(boxes) == 0:
+    def _estimate_target_position(self, box, frame_shape):
+        # Get box position
+        x1, y1, x2, y2 = box.xyxy[0].tolist()
+
+        # Get frame dimensions
+        frame_height, frame_width = frame_shape[0], frame_shape[1]
+        if frame_width <= 0 or frame_height <= 0:
             return None
 
-        best_idx = int(boxes.conf.argmax().item())
-        x1, _, x2, _ = boxes.xyxy[best_idx].tolist()
-        frame_width = frame_shape[1]
-        if frame_width <= 0:
-            print(f"Invalid frame width: {frame_width}")
-            return None
-
+        # Horizontal bearing
         center_x = (x1 + x2) * 0.5
-        normalized_offset = (center_x - (frame_width * 0.5)) / frame_width
-        horizontal_fov_deg = 82.6
-        bearing_offset_deg = normalized_offset * horizontal_fov_deg
+        h_offset = (center_x - frame_width * 0.5) / frame_width
+        bearing_offset_deg = h_offset * 82.6  # horizontal FOV of the tello edu camera
+        bearing_rad = math.radians(self.drone.position.angle + bearing_offset_deg)
 
-        drone_position = self.drone.position
-        return Position(
-            drone_position.x,
-            drone_position.y,
-            drone_position.z,
-            drone_position.angle + bearing_offset_deg,
-        )
+        # Distance from elevation angle + drone height
+        center_y = (y1 + y2) * 0.5
+        v_offset = (center_y - frame_height * 0.5) / frame_height  # positive = below center
+        depression_rad = math.radians(v_offset * 66.5) # vertical FOV
+
+        if depression_rad <= 0:
+            return None  # object at or above horizon, can't estimate ground distance
+
+        ground_distance = self.drone.position.z / math.tan(depression_rad)
+
+        # Project x, y in world space
+        obj_x = self.drone.position.x + ground_distance * math.cos(bearing_rad)
+        obj_y = self.drone.position.y + ground_distance * math.sin(bearing_rad)
+
+        return (obj_x, obj_y)
 
     def run(self):
         """Read frame and let yolo process it."""
@@ -97,13 +103,18 @@ class VideoWorker(QThread):
                 else:
                     consecutive_count = 0
 
-                # TODO Call inspection
+                # TODO: Only confirm inference after its been on M consecutive frames
                 if consecutive_count >= CONFIRM_INFERENCE_M:
-                    # Automatic inspection
+
+                    # TODO: Automatic inspection
                     # self.on_detection(results[0])
-                    target_position = self._estimate_target_position(results[0], frame.shape)
-                    if target_position is not None:
-                        self.target_found.emit(target_position)
+                    
+                    # Get more precise target position
+                    for box in results[0].boxes:
+                        label = results[0].names[int(box.cls[0])]
+                        target_position = self._estimate_target_position(box, frame.shape)
+                        if target_position is not None:
+                            self.target_found.emit(label, target_position)
 
             if last_boxes is not None and (frame_count - last_inference_frame) < BOX_EXPIRE_FRAMES:
                 try:

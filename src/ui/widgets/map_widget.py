@@ -1,5 +1,4 @@
 import math
-from dataclasses import replace 
 
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QColor, QPainter, QPen, QBrush, QPainterPath
@@ -24,23 +23,22 @@ class MapCanvas(QWidget):
 
     def draw_targets(self, painter):
         """Draws targets."""
-        
+
         w, h = self.width(), self.height()
         size = min(w, h) - 20
+        
         # Offsets
         ox = (w - size) / 2
         oy = (h - size) / 2
         cx, cy = ox + size / 2, oy + size / 2
-        
         # Drone position in screen coords
         scale = size / WIDTH_CM
-        
-        for target in self.targets:
+
+        for x, y in self.targets:
             painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(QBrush(QColor("#ff0000")))
-            px = cx + target.y * scale
-            py = cy - target.x * scale
-            # Clamp
+            px = cx + y * scale
+            py = cy - x * scale
             px = max(ox, min(ox + size, px))
             py = max(oy, min(oy + size, py))
             painter.drawEllipse(QPointF(px, py), 3, 3)
@@ -136,12 +134,6 @@ class MapWidget(QWidget):
         self.canvas.update_position(position)
 
     def update_targets(self, new_targets):
-        DIST = 30
-        for target in new_targets:
-            a = math.radians(target.angle)
-            target = replace(target,                                                                                                              
-                       x=target.x + math.cos(a) * DIST,
-                       y=target.y + math.sin(a) * DIST)  
-            self.canvas.targets.append(target)
-
+        for xy in new_targets:
+            self.canvas.targets.append(xy)
         self.canvas.update()
