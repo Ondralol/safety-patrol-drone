@@ -110,16 +110,14 @@ class PopupWindowDroneControls(QDialog):
     
     def _buildMoveSmall(self):
         horizontalLayout = QHBoxLayout()
-        self.dropdownMove = Dropdown(self, "Direction", DIRECTION)
-        self.spinboxMove = Spinbox(self, "Distance", " cm", 10, 500, 25, 1, 0)
-        self.dropdownMoveSpeed = Dropdown(self, "Direction", SPEED)
-        self.buttonMove = GenericButton(self, "Move Small")
-        self.buttonMove.clicked.connect(lambda: self.drone.moveSmall(self.dropdownMove.getCurrentEnum(), self.spinboxMove.getValue(), self.dropdownMoveSpeed.getCurrentEnum()))
+        self.dropdownMoveSmall = Dropdown(self, "Direction", DIRECTION)
+        self.spinboxMoveSmall = Spinbox(self, "Distance", " cm", 10, 500, 5, 1, 0)
+        self.buttonMoveSmall = GenericButton(self, "Move Small")
+        self.buttonMoveSmall.clicked.connect(lambda: self.drone.moveSmall(DIRECTION(self.dropdownMoveSmall.getCurrentEnum()), self.spinboxMoveSmall.getValue()))
 
-        horizontalLayout.addWidget(self.buttonMove)
-        horizontalLayout.addWidget(self.dropdownMove)
-        horizontalLayout.addWidget(self.spinboxMove)
-        horizontalLayout.addWidget(self.dropdownMoveSpeed)
+        horizontalLayout.addWidget(self.buttonMoveSmall)
+        horizontalLayout.addWidget(self.dropdownMoveSmall)
+        horizontalLayout.addWidget(self.spinboxMoveSmall)
         return horizontalLayout
     
     def _buildRotate(self):

@@ -14,7 +14,7 @@ class MODEL_TYPE(StrEnum):
 MODEL_PATH_PREFIX = "models/"             
 
 INFERENCE_EVERY_N = 1 # Only run inference every nth frame
-CONFIRM_INFERENCE_M = 3 # Only confirm inference after n consetutive inferences 
+CONFIRM_INFERENCE_M = 1 # Only confirm inference after n consetutive inferences 
 BOX_EXPIRE_FRAMES = 4 # Old boxes expire after this number of frames
 CONFIDENCE_RATE = 0.40
 

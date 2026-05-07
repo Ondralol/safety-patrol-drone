@@ -25,7 +25,8 @@ class SPEED(IntEnum):
 
 TIMEOUT = 5.0
 
-RC_SPEED_TO_CMS = 1.0 # We need to calibrate this
+# Drone number: 07
+RC_SPEED_TO_CMS = 0.85 # We need to calibrate this
 
 class Drone:
     def __init__(self):
@@ -96,9 +97,10 @@ class Drone:
     def enableMissionPads(self):
         self._run(self.drone.enable_mission_pads)
 
-    def moveSmall(self, dir: DIRECTION, x_cm: int, speed: SPEED, in_thread: bool = True):
+    def moveSmall(self, dir: DIRECTION, x_cm: int, in_thread: bool = True):
         """Uses rc control to move precisely (cm accuracy)."""
 
+        speed = SPEED.MEDIUM
         estimated_cms = speed * RC_SPEED_TO_CMS
         duration = x_cm / estimated_cms
 
@@ -222,7 +224,7 @@ class Drone:
         remaining = total_cm
         while remaining > 0:
             chunk = min(step_cm, remaining)
-            steps.append((lambda d=dir, c=chunk: self.moveSmall(d, c, speed, in_thread=False), pause))
+            steps.append((lambda d=dir, c=chunk: self.moveSmall(d, c, in_thread=False), pause))
             remaining -= chunk
         return steps
 
@@ -281,25 +283,25 @@ class Drone:
         seq = []
         # Moving to top left corner
         seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 45)
-        seq += self._expand_move(DIRECTION.FORWARD, 100, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 100, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         # Moving in a square around grid
-        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         # Moving in a diagonal around grid
-        seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
-        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
-        seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 180)
-        seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.SLOW)
+        seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         return seq
     

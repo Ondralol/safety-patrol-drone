@@ -21,4 +21,4 @@ class ObjectLogWidget(QWidget):
 
     def addEntry(self, message: str):
         timestamp = datetime.now().strftime("%H_%S_%f")[:-3]
-        self.log.addItem(f"[{timestamp}] {message}")
+        self.log.addItem(f"[{timestamp}] - {message}")
