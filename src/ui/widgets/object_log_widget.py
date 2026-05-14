@@ -45,7 +45,7 @@ class ObjectLogWidget(QWidget):
         super().__init__(parent)
 
         timestamp = datetime.now().strftime("%H_%S_%f")[:-3]
-        self.buffer = Buffer(f"object_log{timestamp}")
+        self.buffer = Buffer(f"log/object_log{timestamp}")
         row = []
         row.append("timestamp")
         row.append("object")
@@ -66,8 +66,8 @@ class ObjectLogWidget(QWidget):
         self.log(f"[{timestamp}] - Found {label} at coords: ({pos[0]:.3f}, {pos[1]:.3f})")
 
         row = []
-        row.append("timestamp")
-        row.append("object")
-        row.append("position")
+        row.append(timestamp)
+        row.append(label)
+        row.append(pos)
         self.buffer.addData(row)
 
