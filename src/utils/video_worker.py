@@ -2,6 +2,7 @@ from PySide6.QtCore import QThread, Signal
 from enum import StrEnum
 import numpy as np
 import math
+import time
 
 
 class MODEL_TYPE(StrEnum):
@@ -86,9 +87,17 @@ class VideoWorker(QThread):
         last_inference_frame = 0
         consecutive_count = 0
         frame_count = 0
+        last_emit_time = 0.0
+        frame_interval = 1.0 / 30  # cap at 30 fps
 
-        while self.running:                                                                                                                                              
-            frame = frame_read.frame                                                                                                                                   
+        while self.running:
+            now = time.monotonic()
+            remaining = frame_interval - (now - last_emit_time)
+            if remaining > 0:
+                time.sleep(remaining)
+                continue
+
+            frame = frame_read.frame
             if frame is None:
                 continue
 
@@ -124,14 +133,15 @@ class VideoWorker(QThread):
                     import traceback; traceback.print_exc()
                     display_frame = frame
             else:
-                display_frame = frame
+                display_frame = frame.copy()
 
-            self.frame_ready.emit(display_frame)    
+            last_emit_time = time.monotonic()
             # Might neeed to add like a time sleep or something since
             # this runs in the loop and might poll the same frame multiple times
-            # idk if that's an issue (probably not)      
+            # idk if that's an issue (probably not)  : It was indeed an issue
+            self.frame_ready.emit(display_frame)
 
-            frame_count += 1 
+            frame_count += 1
                                                                                                                                
     
     def on_detection(self, result):
