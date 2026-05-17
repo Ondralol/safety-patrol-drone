@@ -218,7 +218,7 @@ class Drone:
             self.position.angle -= angle_deg
 
 
-    def _expand_move(self, dir: DIRECTION, total_cm: int, speed: SPEED, step_cm: int = 10, pause: float = 0.5):
+    def _expand_move(self, dir: DIRECTION, total_cm: int, speed: SPEED, step_cm: int = 10, pause: float = 0.75):
         # Creates small steps
         steps = []
         remaining = total_cm
@@ -228,8 +228,17 @@ class Drone:
             remaining -= chunk
         return steps
 
-    def _expand_rotate(self, dir: ROTATION_DIRECTION, total_deg: int, step_deg: int = 5, pause: float = 0.5):
+    def _expand_rotate(self, dir: ROTATION_DIRECTION, total_deg: int, step_deg: int = 15, pause: float = 1.75):
         # Creates small steps
+
+        # Fix the offset
+        ROTATION_OFFSET = 5 # TODO TRY 6, might be good
+        if dir is ROTATION_DIRECTION.CLOCKWISE:
+            self.position.angle += ROTATION_OFFSET
+        else:
+            self.position.angle -= ROTATION_OFFSET
+        
+
         steps = []
         remaining = total_deg
         while remaining > 0:
@@ -240,25 +249,28 @@ class Drone:
 
     def _buildInspectSequence(self, speed: SPEED):
         seq = []
+        
+        OFFSET = 10
+
         # Moving to left side
         seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 45)
-        seq += self._expand_move(DIRECTION.FORWARD, 25, speed)
+        seq += self._expand_move(DIRECTION.FORWARD, 25 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.LEFT, 50, speed)
+        seq += self._expand_move(DIRECTION.LEFT, 50 - OFFSET, speed)
         # Go back to the starting point
-        seq += self._expand_move(DIRECTION.RIGHT, 50, speed)
+        seq += self._expand_move(DIRECTION.RIGHT, 50 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.BACK, 20, speed)
+        seq += self._expand_move(DIRECTION.BACK, 20 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 45)
         # Moving to right side
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 45)
-        seq += self._expand_move(DIRECTION.FORWARD, 25, speed)
+        seq += self._expand_move(DIRECTION.FORWARD, 25 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.RIGHT, 50, speed)
+        seq += self._expand_move(DIRECTION.RIGHT, 50 - OFFSET, speed)
         # Go back to the starting point
-        seq += self._expand_move(DIRECTION.LEFT, 50, speed)
+        seq += self._expand_move(DIRECTION.LEFT, 50 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
-        seq += self._expand_move(DIRECTION.BACK, 20, speed)
+        seq += self._expand_move(DIRECTION.BACK, 20 - OFFSET, speed)
         seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 45)
         return seq
     

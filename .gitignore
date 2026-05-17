@@ -101,6 +101,7 @@ dmypy.json
 data/
 runs/
 models/
+logs/
 
 # Video files
 recordings/
