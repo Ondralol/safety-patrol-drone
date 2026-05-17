@@ -39,7 +39,6 @@ class VideoWorker(QThread):
         path = MODEL_PATH_PREFIX + self.model_type
         print(path)
         self.model = YOLO(path)
-        self.model.fuse()
         self.model_loaded = True
 
     def _estimate_target_position(self, box, frame_shape):
@@ -103,14 +102,8 @@ class VideoWorker(QThread):
                 continue
 
             if frame_count % INFERENCE_EVERY_N == 0:
-                results = self.model.track(
-                    frame,
-                    persist=True,
-                    verbose=False,
-                    conf=CONFIDENCE_RATE,
-                    tracker="bytetrack.yaml",
-                    classes=list(self.model.names.keys())
-                    )
+                results = self.model(frame, verbose=False, conf=CONFIDENCE_RATE,
+                                     classes=list(self.model.names.keys()))
                 last_boxes = results[0]
                 last_inference_frame = frame_count
 
@@ -126,15 +119,8 @@ class VideoWorker(QThread):
                     # self.on_detection(results[0])
                     
                     # Get more precise target position
-                    seen_tracks = set()
-
                     for box in results[0].boxes:
                         label = results[0].names[int(box.cls[0])]
-                        track_id = int(box.id[0]) if box.id is not None else -1
-                        if track_id not in seen_tracks:
-                            seen_tracks.add(track_id)
-                            print(f"New object detected: {label} (ID: {track_id})")
-
                         target_position = self._estimate_target_position(box, frame.shape)
                         if target_position is not None:
                             self.target_found.emit(label, target_position)
