@@ -33,15 +33,20 @@ uv run src/main.py
 ```
 
 ## Run jupyter notebooks
+Run 
+```
+uv sync
+```
 Install kernel
 ```
 uv run python -m ipykernel install --user --name safety-drone-app --display-name "safety-drone-app"
 ```
-Run notebook
+Run the notebook
 ```
 uv run jupyter notebook
 ```
-and select the "safety-drone-app" kernel
+and select the "safety-drone-app" kernel \
+Note: If running inside sagemaker, you need to copy `pyproject.toml` first
 
 
 # Streaming

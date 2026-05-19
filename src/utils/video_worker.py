@@ -112,10 +112,10 @@ class VideoWorker(QThread):
                 else:
                     consecutive_count = 0
 
-                # TODO: Only confirm inference after its been on M consecutive frames
+                # Only confirm inference after its been on M consecutive frames
                 if consecutive_count >= CONFIRM_INFERENCE_M:
 
-                    # TODO: Automatic inspection
+                    # Automatic inspection
                     # self.on_detection(results[0])
                     
                     # Get more precise target position

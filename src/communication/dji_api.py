@@ -232,11 +232,11 @@ class Drone:
         # Creates small steps
 
         # Fix the offset
-        ROTATION_OFFSET = 5 # TODO TRY 6, might be good
-        if dir is ROTATION_DIRECTION.CLOCKWISE:
-            self.position.angle += ROTATION_OFFSET
-        else:
-            self.position.angle -= ROTATION_OFFSET
+        #ROTATION_OFFSET = 5 # TODO TRY 6, might be good
+        #if dir is ROTATION_DIRECTION.CLOCKWISE:
+        #    self.position.angle += ROTATION_OFFSET
+        #else:
+        #    self.position.angle -= ROTATION_OFFSET
         
 
         steps = []
@@ -246,6 +246,32 @@ class Drone:
             steps.append((lambda d=dir, c=chunk: self.rotate(d, c, in_thread=False), pause))
             remaining -= chunk
         return steps
+
+    # BUILD A U SHAPE AROUND OBJECT WHILE MANTAINING CAMERA ANGLE IN STAIRCASE MOTION
+    def _buildAlternativeInspectSequence(self):
+        seq = []
+        
+        OFFSET = 10
+        MOVEMENT = 35
+
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+
+        return seq
+
 
     def _buildInspectSequence(self, speed: SPEED):
         seq = []
@@ -280,7 +306,7 @@ class Drone:
         """Inspect an object by sweeping left then right."""
         def _run_sequence():
             self._cancel_event.clear()
-            for step, timeout in self._buildInspectSequence(speed):
+            for step, timeout in self._buildAlternativeInspectSequence():
                 if self._cancel_event.is_set():
                     break
                 step()
@@ -306,7 +332,10 @@ class Drone:
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
         seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
+        seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.MEDIUM)
+
         # Moving in a diagonal around grid
+        """ To long
         seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
@@ -315,6 +344,7 @@ class Drone:
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 180)
         seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
+        """
         return seq
     
 

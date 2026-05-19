@@ -101,7 +101,7 @@ class PopupWindowDroneControls(QDialog):
         self.dropdownMove = Dropdown(self, "Direction", DIRECTION)
         self.spinboxMove = Spinbox(self, "Distance", " cm", 10, 500, 25, 1, 0)
         self.buttonMove = GenericButton(self, "Move")
-        self.buttonMove.clicked.connect(lambda: self.drone.move(self.dropdownMove.getCurrentEnum(), self.spinboxMove.getValue()))
+        self.buttonMove.clicked.connect(lambda: self.drone.move(DIRECTION(self.dropdownMove.getCurrentEnum()), self.spinboxMove.getValue()))
 
         horizontalLayout.addWidget(self.buttonMove)
         horizontalLayout.addWidget(self.dropdownMove)
@@ -155,7 +155,7 @@ class PopupWindowDroneControls(QDialog):
         horizontalLayout = QHBoxLayout()
         self.buttonCircle = GenericButton(self, "Inspect")
         self.dropdownInspect = Dropdown(self, "Speed", SPEED)
-        self.buttonCircle.clicked.connect(lambda: self.drone.inspectObject(self.dropdownInspect.getCurrentEnum()))
+        self.buttonCircle.clicked.connect(lambda: self.drone.inspectObject(None, self.dropdownInspect.getCurrentEnum()))
         horizontalLayout.addWidget(self.buttonCircle)
         horizontalLayout.addWidget(self.dropdownInspect)
 
