@@ -248,64 +248,30 @@ class Drone:
         return steps
 
     # BUILD A U SHAPE AROUND OBJECT WHILE MANTAINING CAMERA ANGLE IN STAIRCASE MOTION
-    def _buildAlternativeInspectSequence(self, speed: SPEED, DISTANCE_TO_OBJECT: int = 10):
-        return [
-            # MOVING TO LEFT U SIDE IN 3 STAIRCASE MOTION forming a final 90 degree angle
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
+    def _buildAlternativeInspectSequence(self):
+        seq = []
+        
+        OFFSET = 10
+        MOVEMENT = 20
 
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
 
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
 
-            # COMING BACK
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.RIGHT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
 
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
+        seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 30, pause = 1.0)
+        seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
 
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
+        return seq
 
-
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
-
-            # MOVING TO RIGHT U SIDE IN 3 STAIRCASE MOTION forming a final 90 degree angle
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
-
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
-
-            (lambda: self.moveSmall(DIRECTION.RIGHT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.FORWARD, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.COUNTERCLOCKWISE, 30, in_thread=False), 2.0),
-
-            # COMING BACK
-
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
-
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
-
-
-            (lambda: self.moveSmall(DIRECTION.LEFT, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.moveSmall(DIRECTION.BACK, DISTANCE_TO_OBJECT, speed,  in_thread=False), 3.0),
-            (lambda: self.rotate(ROTATION_DIRECTION.CLOCKWISE, 30, in_thread=False), 2.0),
-        ]
 
     def _buildInspectSequence(self, speed: SPEED):
         seq = []
@@ -340,7 +306,7 @@ class Drone:
         """Inspect an object by sweeping left then right."""
         def _run_sequence():
             self._cancel_event.clear()
-            for step, timeout in self._buildAlternativeInspectSequence(speed):
+            for step, timeout in self._buildAlternativeInspectSequence():
                 if self._cancel_event.is_set():
                     break
                 step()
@@ -367,6 +333,7 @@ class Drone:
         seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         # Moving in a diagonal around grid
+        """ To long
         seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
         seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
@@ -375,6 +342,7 @@ class Drone:
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 180)
         seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
+        """
         return seq
     
 
