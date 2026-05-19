@@ -232,11 +232,11 @@ class Drone:
         # Creates small steps
 
         # Fix the offset
-        ROTATION_OFFSET = 5 # TODO TRY 6, might be good
-        if dir is ROTATION_DIRECTION.CLOCKWISE:
-            self.position.angle += ROTATION_OFFSET
-        else:
-            self.position.angle -= ROTATION_OFFSET
+        #ROTATION_OFFSET = 5 # TODO TRY 6, might be good
+        #if dir is ROTATION_DIRECTION.CLOCKWISE:
+        #    self.position.angle += ROTATION_OFFSET
+        #else:
+        #    self.position.angle -= ROTATION_OFFSET
         
 
         steps = []
@@ -252,7 +252,7 @@ class Drone:
         seq = []
         
         OFFSET = 10
-        MOVEMENT = 20
+        MOVEMENT = 35
 
         seq += self._expand_move(DIRECTION.LEFT, MOVEMENT, SPEED.MEDIUM, pause = 1.0)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 30, pause = 1.0)
@@ -332,6 +332,8 @@ class Drone:
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 90)
         seq += self._expand_move(DIRECTION.FORWARD, 150, SPEED.MEDIUM)
         seq += self._expand_rotate(ROTATION_DIRECTION.CLOCKWISE, 135)
+        seq += self._expand_move(DIRECTION.FORWARD, 90, SPEED.MEDIUM)
+
         # Moving in a diagonal around grid
         """ To long
         seq += self._expand_move(DIRECTION.FORWARD, 180, SPEED.MEDIUM)

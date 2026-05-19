@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
       self.drone.startStream()
-      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_MEDIUM)
+      self.video_worker = VideoWorker(self.drone, MODEL_TYPE.YOLO11_NANO)
       self.video_worker.frame_ready.connect(self.live_feed.updateFrame)
       self.video_worker.target_found.connect(lambda label, pos: self.map.update_targets([pos]))
       self.video_worker.target_found.connect(lambda label, pos: self.object_log.addEntry(label, pos))
