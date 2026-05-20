@@ -6,6 +6,7 @@ import time
 
 
 class MODEL_TYPE(StrEnum):
+    YOLO5_NANO = "yolov5n-transfer.pt"
     YOLO11_NANO = "yolo11n-pretrained.pt"
     YOLO11_SMALL = "yolo11s-pretrained.pt"
     YOLO11_MEDIUM = "yolo11m-pretrained.pt"
@@ -17,7 +18,7 @@ MODEL_PATH_PREFIX = "models/"
 INFERENCE_EVERY_N = 1 # Only run inference every nth frame
 CONFIRM_INFERENCE_M = 1 # Only confirm inference after n consetutive inferences 
 BOX_EXPIRE_FRAMES = 4 # Old boxes expire after this number of frames
-CONFIDENCE_RATE = 0.40
+CONFIDENCE_RATE = 0.45
 
 class VideoWorker(QThread):                                                                                                                                            
     frame_ready = Signal(np.ndarray)
@@ -61,7 +62,8 @@ class VideoWorker(QThread):
         v_offset = (center_y - frame_height * 0.5) / frame_height  # positive = below center
         depression_rad = math.radians(v_offset * 66.5) # vertical FOV
 
-        if depression_rad <= 0:
+        MIN_DEPRESSION_DEG = 5.0
+        if depression_rad <= math.radians(MIN_DEPRESSION_DEG):
             return None  # object at or above horizon, can't estimate ground distance
 
         ground_distance = self.drone.position.z / math.tan(depression_rad)
