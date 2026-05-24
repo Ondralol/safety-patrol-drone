@@ -34,13 +34,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="m_iyoIov9p_stsRAaoHa-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Drone telemetry and video stream" vertex="1">
-          <mxGeometry height="30" width="140" x="390" y="120" as="geometry" />
+          <mxGeometry height="30" width="140" x="385" y="120" as="geometry" />
         </mxCell>
         <mxCell id="m_iyoIov9p_stsRAaoHa-11" edge="1" parent="1" source="m_iyoIov9p_stsRAaoHa-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.607;entryDx=0;entryDy=0;entryPerimeter=0;" target="m_iyoIov9p_stsRAaoHa-3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="m_iyoIov9p_stsRAaoHa-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Direct drone commands&lt;div&gt;(for movement, etc.)&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="140" x="380" y="210" as="geometry" />
+          <mxGeometry height="30" width="140" x="385" y="210" as="geometry" />
         </mxCell>
         <mxCell id="m_iyoIov9p_stsRAaoHa-22" edge="1" parent="1" source="m_iyoIov9p_stsRAaoHa-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="m_iyoIov9p_stsRAaoHa-16">
           <mxGeometry relative="1" as="geometry" />
@@ -74,7 +74,7 @@
           <mxGeometry height="60" width="120" x="930" y="220" as="geometry" />
         </mxCell>
         <mxCell id="m_iyoIov9p_stsRAaoHa-28" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="(WiFi communication)" vertex="1">
-          <mxGeometry height="25" width="130" x="395" y="165" as="geometry" />
+          <mxGeometry height="25" width="130" x="390" y="165" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
