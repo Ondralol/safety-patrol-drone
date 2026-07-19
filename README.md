@@ -1,6 +1,40 @@
 # Safety Drone Application
 
-Leftover tools and spills on a warehouse floor are a common cause of injuries and downtime, and manual inspections are slow and easy to skip. This project puts a DJI Tello drone on autonomous patrol, using a YOLO-based vision pipeline to spot hazards on the floor, pin their location on a live map, and log them for cleanup. Built as a Python desktop app with PySide6 for live control and monitoring.
+Autonomous drone patrol system for warehouses and factories. It flies a work area on a set path, spots hazards like spills and misplaced tools with a live YOLO model, drops a pin on a map for each one, and logs the class, time, and coordinates so they can be cleaned up before the next shift.
+
+Built by [Hector Freard Ruiz](https://github.com/Hectorfr), [Florian Thollot](https://github.com/Flo822), and [Ondrej Duba](https://github.com/Ondralol).
+
+## Demo
+
+**Path sequence** — the drone autonomously sweeps the work area, detecting hazards as it flies.
+
+
+**Inspection sequence** — once something is detected, the drone circles it for a closer, more reliable look.
+
+
+## How it works
+
+Two automated flight sequences drive the drone: a path sequence that covers the entire work area, and an inspection sequence that flies an arc around a detected object to confirm it from multiple angles. Since the Tello EDU has no GPS, position is tracked with dead reckoning from every command sent to the drone.
+
+For detection, we trained and compared 6 models across two architectures on a custom dataset of 10,504 images built from Objects365 and a spill-detection dataset, covering 6 hazard classes: hammer, screwdriver, knife, tape, scissors, and spill. RT-DETR Large came out on top for accuracy, but YOLO11 Medium is what actually runs on the drone, since inference needed to run in real time without a GPU.
+
+| Model | Train mAP50 | Val mAP50 | Test mAP50 |
+|---|---|---|---|
+| YOLOv5 Nano (Transfer) | 0.74 | 0.33 | 0.36 |
+| YOLO11 Nano | 0.53 | 0.26 | 0.26 |
+| YOLO11 Nano (Transfer) | 0.73 | 0.35 | 0.37 |
+| YOLO11 Small (Transfer) | 0.71 | 0.37 | 0.39 |
+| YOLO11 Medium (Transfer) | 0.70 | 0.38 | 0.42 |
+| RT-DETR Large (Transfer) | 0.88 | 0.40 | 0.45 |
+
+## Features
+
+- Autonomous patrol and inspection flight sequences, launchable with a single button
+- Live object detection overlaid on the video feed
+- Map of the drone's position and every detected hazard
+- Structured hazard log: class, timestamp, coordinates
+- Manual flight controls and a debug panel for live telemetry
+- Custom, publicly available dataset (10K+ images, 6 classes)
 
 Full report: [resources/report.pdf](resources/report.pdf)
 
