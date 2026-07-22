@@ -2,14 +2,22 @@
 
 Autonomous drone patrol system for warehouses and factories. It flies a work area on a set path, spots hazards like spills and misplaced tools with a live YOLO model, drops a pin on a map for each one, and logs the class, time, and coordinates so they can be cleaned up before the next shift.
 
-Built by [Hector Freard Ruiz](https://github.com/Hectorfr), [Florian Thollot](https://github.com/Flo822), and [Ondrej Duba](https://github.com/Ondralol).
+
 
 ## Demo
 
-**Path sequence** — the drone autonomously sweeps the work area, detecting hazards as it flies.
+**Path sequence** - the drone autonomously sweeps the work area, detecting hazards as it flies.
 
 
-**Inspection sequence** — once something is detected, the drone circles it for a closer, more reliable look.
+
+
+https://github.com/user-attachments/assets/9a0be8c9-c1d0-40e0-9abf-f79a63bfcee9
+
+
+**Inspection sequence** - once something is detected, the drone circles it for a closer, more reliable look.
+
+https://github.com/user-attachments/assets/0e33fec8-c347-420e-bb87-77b9c19626bb
+
 
 
 ## How it works
@@ -93,3 +101,6 @@ Note: If running inside sagemaker, you need to copy `pyproject.toml` first
 sudo ufw allow 8890/udp
 sudo ufw allow 11111/udp
 ```
+
+
+Built by [Hector Freard Ruiz](https://github.com/Hectorfr), [Florian Thollot](https://github.com/Flo822), and [Ondrej Duba](https://github.com/Ondralol).
